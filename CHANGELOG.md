@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.0 - 2025-08-27
+- Added macOS (Apple Silicon/Intel) support with new shell scripts:
+  - `setup-dependencies.sh`, `setup-audible-cli.sh`, `convert-direct.sh`, `split-into-tracks.sh`, `trim-audio.sh`, `audible-cli-wrapper.sh`
+- Updated README and QUICK-START with macOS instructions
+
 ## 1.2.0 - 2025-08-26
 - Simplified workflow to FFmpeg-only conversion + chapter splitting
 - Removed AAXtoMP3 and bash-based scripts
