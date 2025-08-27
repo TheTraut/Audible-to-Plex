@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.0 - 2025-08-27
+- Mac branch is now macOS-only (Apple Silicon/Intel)
+- Removed Windows PowerShell scripts and Windows-specific docs
+- Simplified README and Quick Start to macOS usage only
+
 ## 1.3.0 - 2025-08-27
 - Added macOS (Apple Silicon/Intel) support with new shell scripts:
   - `setup-dependencies.sh`, `setup-audible-cli.sh`, `convert-direct.sh`, `split-into-tracks.sh`, `trim-audio.sh`, `audible-cli-wrapper.sh`

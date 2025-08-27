@@ -48,7 +48,7 @@
 ## Notes
 
 ### Current Status
-The basic conversion workflow is set up and ready for testing on Windows and macOS.
+The macOS workflow is set up and ready for testing.
 
 ### Next Steps
 1. Test the conversion with the existing Game of Thrones book
