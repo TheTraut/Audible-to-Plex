@@ -2,12 +2,13 @@
 set -euo pipefail
 
 usage() {
-  echo "Usage: $0 -i <input_file> [--output-dir ./converted] [--trim-intro-outro]" >&2
+  echo "Usage: $0 -i <input_file> [--output-dir ./converted] [--trim-intro-outro] [--audible-password <pw>]" >&2
 }
 
 INPUT_FILE=""
 OUTPUT_DIR="./converted"
 TRIM=false
+AUDIBLE_PASSWORD_ARG=""
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -17,6 +18,8 @@ while [ $# -gt 0 ]; do
       OUTPUT_DIR="$2"; shift 2 ;;
     --trim-intro-outro)
       TRIM=true; shift ;;
+    --audible-password)
+      AUDIBLE_PASSWORD_ARG="$2"; shift 2 ;;
     -h|--help)
       usage; exit 0 ;;
     *)
@@ -40,9 +43,27 @@ fi
 mkdir -p "$OUTPUT_DIR"
 
 AUTH_BYTES=""
+# Try file first
 if [ -f audible-activation-code.txt ]; then
   AUTH_BYTES=$(tr -d '\n\r' < audible-activation-code.txt)
 fi
+# If missing, try to auto-fetch via audible-cli
+if [ -z "$AUTH_BYTES" ]; then
+  if [ -x ./audible-cli-wrapper.sh ]; then
+    # Prefer explicit flag, else fall back to env var
+    if [ -n "$AUDIBLE_PASSWORD_ARG" ]; then
+      export AUDIBLE_AUTH_PASSWORD="$AUDIBLE_PASSWORD_ARG"
+    fi
+    if ACT_BYTES=$(./audible-cli-wrapper.sh activation-bytes 2>/dev/null); then
+      if [[ "$ACT_BYTES" =~ ^[0-9a-fA-F]{8}$ ]]; then
+        AUTH_BYTES="$ACT_BYTES"
+        printf "%s" "$AUTH_BYTES" > audible-activation-code.txt
+        echo "Saved activation bytes to audible-activation-code.txt"
+      fi
+    fi
+  fi
+fi
+# Fallback to interactive prompt
 if [ -z "$AUTH_BYTES" ]; then
   read -r -p "Enter Audible activation bytes (8 hex): " AUTH_BYTES
 fi

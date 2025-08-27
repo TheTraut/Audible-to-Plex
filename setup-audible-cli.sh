@@ -3,6 +3,7 @@ set -euo pipefail
 
 AUTO_YES=false
 SKIP_QUICKSTART=false
+AUDIBLE_PASSWORD_ARG=""
 
 for arg in "$@"; do
   case "$arg" in
@@ -13,6 +14,9 @@ for arg in "$@"; do
     --skip-quickstart)
       SKIP_QUICKSTART=true
       shift
+      ;;
+    --audible-password)
+      # next positional is password
       ;;
     *)
       ;;
@@ -45,7 +49,11 @@ fi
 
 if [ "$SKIP_QUICKSTART" = false ]; then
   echo "Starting audible-cli quickstart..."
-  ./audible-cli-wrapper.sh quickstart || true
+  if [ -n "${AUDIBLE_AUTH_PASSWORD:-}" ]; then
+    ./audible-cli-wrapper.sh quickstart || true
+  else
+    ./audible-cli-wrapper.sh quickstart || true
+  fi
 fi
 
 echo "Testing setup..."

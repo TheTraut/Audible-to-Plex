@@ -51,10 +51,17 @@ artist=$(printf '%s' "$json" | jq -r '.format.tags.artist // empty')
 
 num=1
 printf '%s' "$json" | jq -r '.chapters[] | [.start_time, .end_time, (.tags.title // ("Chapter "+(0|tostring)))] | @tsv' | while IFS=$'\t' read -r start end title; do
-  printf -v track "%02d - %s.m4b" "$num" "${title//[<>:"/\\|?*]/_}"
+  # Normalize times: strip CRs and ensure leading 0 for fractional-only values
+  start=${start//$'\r'/}
+  end=${end//$'\r'/}
+  [[ "$start" == .* ]] && start="0$start"
+  [[ "$end" == .* ]] && end="0$end"
+  # Compute duration as end-start with 6 decimal places; guard against rounding issues
+  duration=$(awk "BEGIN{d=$end-$start; if (d<0.05) d=0.05; printf \"%.6f\", d}")
+  printf -v track "%02d - %s.m4b" "$num" "${title//[<>:\"/\\|?*]/_}"
   out_path="$OUTPUT_DIR/$track"
   echo "Creating: $track"
-  ffmpeg -hide_banner -y -i "$INPUT_FILE" -ss "$start" -to "$end" -map 0:a -c copy -metadata title="$title" -metadata album="$album" -metadata artist="$artist" -metadata track=$num "$out_path" >/dev/null
+  ffmpeg -hide_banner -y -ss "$start" -i "$INPUT_FILE" -t "$duration" -map 0:a -c copy -metadata title="$title" -metadata album="$album" -metadata artist="$artist" -metadata track=$num "$out_path" >/dev/null
   num=$((num+1))
 done
 

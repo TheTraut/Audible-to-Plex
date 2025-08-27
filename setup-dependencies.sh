@@ -22,10 +22,10 @@ fi
 if command -v brew >/dev/null 2>&1; then
   echo "Using Homebrew to install missing dependencies..."
   if [ "$need_ffmpeg" = true ]; then
-    brew install ffmpeg
+    brew install homebrew/core/ffmpeg
   fi
   if [ "$need_jq" = true ]; then
-    brew install jq
+    brew install homebrew/core/jq
   fi
 else
   echo "Homebrew not found. Please install Homebrew from https://brew.sh and re-run this script." >&2

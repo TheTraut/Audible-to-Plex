@@ -58,6 +58,23 @@ ffprobe -v error -print_format json -show_chapters -show_format ./converted/Your
 - `trim-audio.sh` – Trim Audible intro/outro on a given M4B
 - `audible-cli-wrapper.sh` – Wrapper to call audible-cli reliably
 
+## Activation bytes
+- The converter needs your Audible activation bytes (8 hex). `convert-direct.sh` will now auto-fetch and save them to `audible-activation-code.txt` on first run (if possible), falling back to a prompt only if needed.
+- You can also save them manually if desired:
+```
+./audible-cli-wrapper.sh activation-bytes | tr -d '\n' > audible-activation-code.txt
+```
+
+### Encrypted audible-cli auth
+- If you encrypted your audible-cli auth file, set a password before running commands:
+```
+export AUDIBLE_AUTH_PASSWORD="your-password"
+```
+- Or pass it to the converter directly:
+```
+./convert-direct.sh -i ./YourBook.aax --audible-password "your-password"
+```
+
 ## Legal
 - For personal use only with books you own.
 - Respect copyright and DRM laws.
