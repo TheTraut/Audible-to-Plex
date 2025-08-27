@@ -1,0 +1,62 @@
+# Audible to Plex Converter
+
+This project converts Audible AAX/AAXC audiobooks to Plex-friendly M4B files and (optionally) splits them into per‑chapter tracks for the best Plex experience.
+
+## Features
+- Convert AAX to M4B using FFmpeg and your activation bytes
+- Preserve embedded metadata and chapters
+- Optional: split M4B into chapter tracks for Plex (album-like browsing)
+- No admin rights required; portable FFmpeg
+
+## Requirements
+- Windows 10/11 with PowerShell
+- Python + audible-cli (to obtain activation bytes)
+- Your Audible account
+
+## Quick Start
+
+1) Setup
+- Run audible-cli setup (one-time):
+```
+./setup-audible-cli.ps1 -AutoYes
+```
+- Portable FFmpeg is already included via `./setup-dependencies.ps1` (if needed):
+```
+./setup-dependencies.ps1
+```
+
+2) Convert a book (AAX → M4B)
+```
+./convert-direct.ps1 -InputFile ".\YourBook.aax" -TrimIntroOutro
+```
+- Uses `audible-activation-code.txt` if present, or prompts for activation bytes (8 hex)
+- Outputs to `./converted/YourBook.m4b`
+
+3) Split into chapter tracks (recommended for Plex)
+```
+./split-into-tracks.ps1 -InputFile ".\converted\YourBook.m4b"
+```
+- Outputs: `./converted/YourBook (Chapters)/NN - Chapter NN.m4b`
+
+4) Organize for Plex
+- Create folders like `Plex Audiobooks/Author/Book Title/`
+- Move chapter tracks into the `Book Title` folder
+- Add/refresh your Plex Music library to point at `Plex Audiobooks`
+
+## Tips
+- To verify chapters in an M4B:
+```
+./tools/ffmpeg/bin/ffprobe.exe -v error -print_format json -show_chapters -show_format ".\converted\YourBook.m4b" > chapters.json
+```
+- If you only want a single file (no split), you can skip step 3. Plex may not show embedded chapters, but the file will play fine.
+
+## Scripts
+- `setup-audible-cli.ps1` – Configure audible-cli and save activation bytes
+- `setup-dependencies.ps1` – Download portable FFmpeg
+- `convert-direct.ps1` – Convert AAX → M4B (metadata + chapters preserved)
+- `split-into-tracks.ps1` – Create per‑chapter M4B tracks
+- `trim-audio.ps1` – Trim Audible intro/outro on a given M4B
+
+## Legal
+- For personal use only with books you own.
+- Respect copyright and DRM laws.
