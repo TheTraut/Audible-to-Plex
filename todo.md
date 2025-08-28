@@ -10,11 +10,11 @@
 - [x] Create proper folder structure for Plex audiobooks
 - [x] Create README and documentation for the process
 - [x] Create CHANGELOG.md for version tracking
-- [x] Add macOS (Apple Silicon/Intel) shell scripts and instructions
 
 ## In Progress 🚧
 
 - [ ] Test conversion with the Game of Thrones book
+- [ ] Verify macOS/Linux and Windows script parity
 
 ## Pending 📋
 
@@ -23,7 +23,6 @@
 - [ ] Test batch conversion
 - [ ] Verify Plex compatibility of output files
 - [ ] Test audio trimming functionality
-- [ ] Validate macOS scripts on Apple Silicon and Intel
 
 ### Enhancement Ideas
 - [ ] Create GUI wrapper for easier use
@@ -37,6 +36,7 @@
 - [ ] Add troubleshooting section with common issues
 - [ ] Document Plex library setup steps in detail
 - [ ] Create FAQ section
+ - [x] Update README and QUICK-START for both OS's
 
 ### Future Features
 - [ ] Support for other audiobook formats
@@ -48,7 +48,7 @@
 ## Notes
 
 ### Current Status
-The macOS workflow is set up and ready for testing.
+The basic conversion workflow is set up and ready for testing. All scripts are created and FFmpeg is installed.
 
 ### Next Steps
 1. Test the conversion with the existing Game of Thrones book

@@ -1,35 +1,38 @@
-# Quick Start (macOS)
+# Quick Start
+
+This guide shows both Windows (PowerShell) and macOS/Linux (Bash) commands.
 
 ## 1) One-time setup
+Windows:
 ```
-./setup-dependencies.sh
+./setup-audible-cli.ps1 -AutoYes
+./setup-dependencies.ps1
+```
+macOS/Linux:
+```
 ./setup-audible-cli.sh --auto-yes
+./setup-dependencies.sh
 ```
 
-## 2) Convert the audiobook (AAX/AAXC → M4B)
+## 2) Convert the audiobook (AAX → M4B)
+Windows:
 ```
-./convert-direct.sh -i ./YourBook.aax 
+./convert-direct.ps1 -InputFile ".\YourBook.aax" -TrimIntroOutro
 ```
-Add "--trim-intro-outro" to trim off audibles intros and outros
+macOS/Linux:
+```
+./convert-direct.sh -i "./YourBook.aax" --trim-intro-outro
+```
 Output: `./converted/YourBook.m4b`
 
-Note: The converter will auto-save activation bytes on first run when possible. If it prompts, you can paste them once, or save in advance with:
-```
-./audible-cli-wrapper.sh activation-bytes | tr -d '\n' > audible-activation-code.txt
-```
-
-If you encrypted your audible-cli auth file, either export the password once per shell:
-```
-export AUDIBLE_AUTH_PASSWORD="your-password"
-```
-or pass it to the converter directly:
-```
-./convert-direct.sh -i ./YourBook.aax --audible-password "your-password"
-```
-
 ## 3) Split into chapter tracks (best for Plex)
+Windows:
 ```
-./split-into-tracks.sh -i ./converted/YourBook.m4b
+./split-into-tracks.ps1 -InputFile ".\converted\YourBook.m4b"
+```
+macOS/Linux:
+```
+./split-into-tracks.sh -i "./converted/YourBook.m4b"
 ```
 Output: `./converted/YourBook (Chapters)/NN - Chapter NN.m4b`
 

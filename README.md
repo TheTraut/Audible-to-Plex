@@ -1,42 +1,53 @@
-# Audible to Plex Converter (macOS)
+# Audible to Plex Converter
 
-This project converts Audible AAX/AAXC audiobooks to Plex-friendly M4B files and (optionally) splits them into per‑chapter tracks for the best Plex experience.
+This project converts Audible AAX/AAXC audiobooks to Plex‑friendly M4B files and (optionally) splits them into per‑chapter tracks for the best Plex experience.
 
 ## Features
 - Convert AAX/AAXC to M4B using FFmpeg and your activation bytes
 - Preserve embedded metadata and chapters
-- Optional: split M4B into chapter tracks for Plex (album-like browsing)
-- Uses Homebrew for dependencies on macOS
+- Optional: split M4B into chapter tracks for Plex (album‑like browsing)
+- No admin rights required; portable FFmpeg on Windows, Homebrew support on macOS
 
 ## Requirements
-- macOS (Apple Silicon or Intel) with bash/zsh
+- Windows 10/11 with PowerShell or macOS/Linux with Bash
 - Python + audible-cli (to obtain activation bytes)
 - Your Audible account
 
-## Quick Start (macOS)
+## Quick Start
 
-1) Setup
-- Install/verify dependencies (ffmpeg, ffprobe, jq):
+### Windows (PowerShell)
+1) Setup audible-cli and dependencies
 ```
-./setup-dependencies.sh
+./setup-audible-cli.ps1 -AutoYes
+./setup-dependencies.ps1
 ```
-- audible-cli setup (one-time):
+2) Convert a book (AAX → M4B)
 ```
-./setup-audible-cli.sh --auto-yes
+./convert-direct.ps1 -InputFile ".\YourBook.aax" [-TrimIntroOutro] [-AudiblePassword "your_pw_if_encrypted"]
 ```
-
-2) Convert a book (AAX/AAXC → M4B)
-```
-./convert-direct.sh -i ./YourBook.aax --trim-intro-outro
-```
-- Uses `audible-activation-code.txt` if present, or prompts for activation bytes (8 hex)
-- Outputs to `./converted/YourBook.m4b`
-
+- Uses `audible-activation-code.txt` if present
+- If missing, auto-fetches via `audible-cli activation-bytes` and saves it
 3) Split into chapter tracks (recommended for Plex)
 ```
-./split-into-tracks.sh -i ./converted/YourBook.m4b
+./split-into-tracks.ps1 -InputFile ".\converted\YourBook.m4b"
 ```
-- Outputs: `./converted/YourBook (Chapters)/NN - Chapter NN.m4b`
+
+### macOS/Linux (Bash)
+1) Setup audible-cli and dependencies
+```
+./setup-audible-cli.sh --auto-yes
+./setup-dependencies.sh
+```
+2) Convert a book (AAX → M4B)
+```
+./convert-direct.sh -i "./YourBook.aax" [--trim-intro-outro] [--audible-password "your_pw_if_encrypted"]
+```
+- Uses `audible-activation-code.txt` if present
+- If missing, auto-fetches via `./audible-cli-wrapper.sh activation-bytes` and saves it
+3) Split into chapter tracks (recommended for Plex)
+```
+./split-into-tracks.sh -i "./converted/YourBook.m4b"
+```
 
 4) Organize for Plex
 - Create folders like `Plex Audiobooks/Author/Book Title/`
@@ -44,36 +55,23 @@ This project converts Audible AAX/AAXC audiobooks to Plex-friendly M4B files and
 - Add/refresh your Plex Music library to point at `Plex Audiobooks`
 
 ## Tips
-- To verify chapters in an M4B:
+- To verify chapters in an M4B (Windows):
 ```
-ffprobe -v error -print_format json -show_chapters -show_format ./converted/YourBook.m4b > chapters.json
+./tools/ffmpeg/bin/ffprobe.exe -v error -print_format json -show_chapters -show_format ".\converted\YourBook.m4b" > chapters.json
 ```
-- If you only want a single file (no split), you can skip step 3. Plex may not show embedded chapters, but the file will play fine.
+- To verify chapters in an M4B (macOS/Linux):
+```
+ffprobe -v error -print_format json -show_chapters -show_format "./converted/YourBook.m4b" > chapters.json
+```
+- If you only want a single file (no split), you can skip the split step. Plex may not show embedded chapters, but the file will play fine.
 
-## Scripts (macOS)
-- `setup-dependencies.sh` – Install FFmpeg and jq via Homebrew
-- `setup-audible-cli.sh` – Configure audible-cli and save activation bytes
-- `convert-direct.sh` – Convert AAX/AAXC → M4B (metadata + chapters preserved)
-- `split-into-tracks.sh` – Create per‑chapter M4B tracks
-- `trim-audio.sh` – Trim Audible intro/outro on a given M4B
-- `audible-cli-wrapper.sh` – Wrapper to call audible-cli reliably
+## Scripts
+- Windows: `setup-audible-cli.ps1`, `setup-dependencies.ps1`, `convert-direct.ps1`, `split-into-tracks.ps1`, `trim-audio.ps1`, `audible-cli-wrapper.ps1`
+- macOS/Linux: `setup-audible-cli.sh`, `setup-dependencies.sh`, `convert-direct.sh`, `split-into-tracks.sh`, `trim-audio.sh`, `audible-cli-wrapper.sh`
 
-## Activation bytes
-- The converter needs your Audible activation bytes (8 hex). `convert-direct.sh` will now auto-fetch and save them to `audible-activation-code.txt` on first run (if possible), falling back to a prompt only if needed.
-- You can also save them manually if desired:
-```
-./audible-cli-wrapper.sh activation-bytes | tr -d '\n' > audible-activation-code.txt
-```
-
-### Encrypted audible-cli auth
-- If you encrypted your audible-cli auth file, set a password before running commands:
-```
-export AUDIBLE_AUTH_PASSWORD="your-password"
-```
-- Or pass it to the converter directly:
-```
-./convert-direct.sh -i ./YourBook.aax --audible-password "your-password"
-```
+Notes:
+- The wrapper scripts will prefer `audible` on PATH and fall back to Python module execution.
+- You can pass the password for encrypted auth files using `AUDIBLE_AUTH_PASSWORD` (macOS/Linux) or `-AudiblePassword`/`$env:AUDIBLE_AUTH_PASSWORD` (Windows).
 
 ## Legal
 - For personal use only with books you own.
